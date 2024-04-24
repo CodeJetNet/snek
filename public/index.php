@@ -92,10 +92,11 @@ function translate_coordinates_to_move($x, $y, $new_x, $new_y): string
 
 $app->post('/move', function (ServerRequestInterface $request, ResponseInterface $response) {
     $requestData = $request->getParsedBody();
+
     $board = [];
 
-    for ($x = 0; $x < 11; $x++) {
-        for ($y = 0; $y < 11; $y++) {
+    for ($x = 0; $x < $requestData['board']['width']; $x++) {
+        for ($y = 0; $y < $requestData['board']['height']; $y++) {
             $board[$x][$y] = '';
         }
     }

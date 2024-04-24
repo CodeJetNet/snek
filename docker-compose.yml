@@ -8,8 +8,7 @@ services:
       - .:/app
       - ./docker/startup.sh:/usr/local/bin/startup.sh
     environment:
-      port: "8080"
-
+      port: "80"
     ports:
       - "80:80"
     expose:
