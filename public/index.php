@@ -1,5 +1,6 @@
 <?php
 
+use PhpTek\BattleSnek\Models\BattlesnakeDetails;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
@@ -14,14 +15,13 @@ $app->get(
     '/',
     function (ServerRequestInterface $request, ResponseInterface $response) {
         return $response->withStatus(200)->withJson(
-            [
-                'apiversion' => '1',
-                'author' => 'phptek16battlesnake',
-                'color' => '#39FF33',
-                'header' => 'default',
-                'tail' => 'default',
-                'version' => '0.0.1-beta',
-            ]
+            new BattlesnakeDetails(
+                '1',
+                'sevind_and_josh',
+                '#39FF33',
+                'default',
+                'default'
+            )
         );
     }
 );
@@ -120,11 +120,13 @@ $app->post('/move', function (ServerRequestInterface $request, ResponseInterface
         return $response->withStatus(200);
     }
 
+    $ninja_move = $where_am_i_going[array_rand($where_am_i_going)];
+
     $where_am_i_going_for_real_this_time = translate_coordinates_to_move(
         $requestData['you']['head']['x'],
         $requestData['you']['head']['y'],
-        $where_am_i_going[0]['x'],
-        $where_am_i_going[0]['y']
+        $ninja_move['x'],
+        $ninja_move['y']
     );
 
     return $response->withStatus(200)->withJson(['move' => $where_am_i_going_for_real_this_time]);
