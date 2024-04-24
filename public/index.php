@@ -11,22 +11,24 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 $app->get(
-    '/', function (ServerRequestInterface $request, ResponseInterface $response) {
+    '/',
+    function (ServerRequestInterface $request, ResponseInterface $response) {
         return $response->withStatus(200)->withJson(
             [
-            'apiversion' => '1',
-            'author' => 'phptek16battlesnake',
-            'color' => '#39FF33',
-            'header' => 'default',
-            'tail' => 'default',
-            'version' => '0.0.1-beta',
+                'apiversion' => '1',
+                'author' => 'phptek16battlesnake',
+                'color' => '#39FF33',
+                'header' => 'default',
+                'tail' => 'default',
+                'version' => '0.0.1-beta',
             ]
         );
     }
 );
 
 $app->post(
-    '/start', function (ServerRequestInterface $request, ResponseInterface $response) {
+    '/start',
+    function (ServerRequestInterface $request, ResponseInterface $response) {
         return $response->withStatus(200);
     }
 );
@@ -52,16 +54,20 @@ function possible_moves($x, $y, $board): array
 {
     $possible_moves = [];
     if (can_move_here($x + 1, $y, $board)) {
+        error_log($x + 1 . ' ' . $y . ' is a possible move');
         $possible_moves[] = ['x' => $x + 1, 'y' => $y];
     }
     if (can_move_here($x - 1, $y, $board)) {
         $possible_moves[] = ['x' => $x - 1, 'y' => $y];
+        error_log($x - 1 . ' ' . $y . ' is a possible move');
     }
     if (can_move_here($x, $y + 1, $board)) {
         $possible_moves[] = ['x' => $x, 'y' => $y + 1];
+        error_log($x . ' ' . $y + 1 . ' is a possible move');
     }
     if (can_move_here($x, $y - 1, $board)) {
         $possible_moves[] = ['x' => $x, 'y' => $y - 1];
+        error_log($x . ' ' . $y - 1 . ' is a possible move');
     }
     return $possible_moves;
 }
@@ -75,33 +81,26 @@ function translate_coordinates_to_move($x, $y, $new_x, $new_y): string
         return 'left';
     }
     if ($new_y > $y) {
-        return 'down';
-    }
-    if ($new_y < $y) {
         return 'up';
     }
+    if ($new_y < $y) {
+        return 'down';
+    }
+
+    return '';
 }
 
 $app->post('/move', function (ServerRequestInterface $request, ResponseInterface $response) {
-    error_log('Received move data: ' . print_r($request->getParsedBody(), true) . PHP_EOL);
     $requestData = $request->getParsedBody();
-
     $board = [];
 
-    for ($x = 0; $x < 10; $x++) {
-        for ($y = 0; $y < 10; $y++) {
-            // Assign some values to the array elements
+    for ($x = 0; $x < 11; $x++) {
+        for ($y = 0; $y < 11; $y++) {
             $board[$x][$y] = '';
         }
     }
 
     foreach ($requestData['board']['snakes'] as $snake) {
-        if ($snake['id'] == $requestData['you']) {
-            $snake['name'] = 'dorian';
-            continue;
-        }
-
-        // build the board
         foreach ($snake['body'] as $location) {
             $board[$location['x']][$location['y']] = 's';
         }
@@ -113,23 +112,26 @@ $app->post('/move', function (ServerRequestInterface $request, ResponseInterface
 
     $board[$requestData['you']['head']['x']][$requestData['you']['head']['y']] = 'h';
 
-
-//    error_log('Received move data: ' . print_r($board, true) . PHP_EOL);
     $where_am_i_going = possible_moves($requestData['you']['head']['x'], $requestData['you']['head']['y'], $board);
+
+    if (empty($where_am_i_going)) {
+        // Nowhere to go.  *cries*
+        return $response->withStatus(200);
+    }
+
     $where_am_i_going_for_real_this_time = translate_coordinates_to_move(
         $requestData['you']['head']['x'],
         $requestData['you']['head']['y'],
         $where_am_i_going[0]['x'],
         $where_am_i_going[0]['y']
     );
-//    $possibleMove = ['up', 'down', 'left', 'right'];
-//    $randPick = $possibleMove[array_rand($possibleMove)];
-    error_log('Snek Should: ' . print_r($where_am_i_going_for_real_this_time, true) . PHP_EOL);
+
     return $response->withStatus(200)->withJson(['move' => $where_am_i_going_for_real_this_time]);
 });
 
 $app->post(
-    '/end', function (ServerRequestInterface $request, ResponseInterface $response) {
+    '/end',
+    function (ServerRequestInterface $request, ResponseInterface $response) {
         return $response->withStatus(200);
     }
 );
