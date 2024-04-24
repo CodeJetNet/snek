@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  snek:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./docker/startup.sh:/usr/local/bin/startup.sh
+    ports:
+      - "80:80"
+    expose:
+      - 80
