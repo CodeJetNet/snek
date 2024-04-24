@@ -26,6 +26,9 @@ $app->post('/start', function (ServerRequestInterface $request, ResponseInterfac
 });
 
 $app->post('/move', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+    fwrite(STDOUT, 'Received move data: ' . print_r($request->getParsedBody(), true) . PHP_EOL);
+
     $possibleMove = ['up', 'down', 'left', 'right'];
     $randPick = $possibleMove[array_rand($possibleMove)];
     return $response->withStatus(200)->withJson(['move' => $randPick]);
