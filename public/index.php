@@ -22,13 +22,13 @@ $app->get('/', function (ServerRequestInterface $request, ResponseInterface $res
 });
 
 $app->post('/start', function (ServerRequestInterface $request, ResponseInterface $response) {
-    return $response->withStatus(200)->withJson([]);
+    return $response->withStatus(200);
 });
 
 $app->post('/move', function (ServerRequestInterface $request, ResponseInterface $response) {
-    return $response->withStatus(200)->withJson([]);
-
-
+    $possibleMove = ['up', 'down', 'left', 'right'];
+    $randPick = $possibleMove[array_rand($possibleMove)];
+    return $response->withStatus(200)->withJson(['move' => $randPick]);
 });
 
 $app->post('/end', function (ServerRequestInterface $request, ResponseInterface $response) {
