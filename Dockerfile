@@ -17,6 +17,12 @@ COPY docker/startup.sh /usr/local/bin/startup.sh
 
 WORKDIR /app
 COPY . /app
+
+# This is useless when run local
+RUN curl -sS https://getcomposer.org/installer | php
+RUN php composer.phar install --optimize-autoloader --no-dev
+RUN rm -rf composer.phar
+
 RUN chown -R www-data: /app
 
 EXPOSE 80
